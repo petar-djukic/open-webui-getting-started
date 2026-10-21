@@ -22,8 +22,10 @@ RUN set -eu; \
     dpkg -i "$deb"; \
     rm "$deb"
 
-COPY --chmod=755 git-setup.sh /usr/local/bin/git-setup.sh
+# git authenticates through gh and glab, which read GH_TOKEN and GITLAB_TOKEN from the
+# environment. Each helper answers only for its own hosts, so they can be chained.
+RUN git config --system credential.helper '!gh auth git-credential' \
+    && git config --system --add credential.helper '!glab auth git-credential' \
+    && git lfs install --system
 
 USER user
-ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/git-setup.sh"]
-CMD ["run"]

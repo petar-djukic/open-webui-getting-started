@@ -17,11 +17,11 @@ services:
       - open-terminal:/home/user
       - ${HOME}/${WORKSPACE:?set WORKSPACE in .env}:/home/user/${WORKSPACE}
     environment:
-      - OPEN_TERMINAL_API_KEY=${OPEN_TERMINAL_API_KEY:?set OPEN_TERMINAL_API_KEY in .env}
-      - GIT_USER_NAME=${GIT_USER_NAME:-}
-      - GIT_USER_EMAIL=${GIT_USER_EMAIL:-}
-      - GIT_ALT_REMOTE=${GIT_ALT_REMOTE:-}
-      - GIT_ALT_EMAIL=${GIT_ALT_EMAIL:-}
+      - OPEN_TERMINAL_API_KEY=${OPEN_TERMINAL_API_KEY:?run ./terminals.sh sync}
+      - GIT_AUTHOR_NAME=${GIT_USER_NAME:?set GIT_USER_NAME in .env}
+      - GIT_AUTHOR_EMAIL=${GIT_USER_EMAIL:?set GIT_USER_EMAIL in .env}
+      - GIT_COMMITTER_NAME=${GIT_USER_NAME}
+      - GIT_COMMITTER_EMAIL=${GIT_USER_EMAIL}
       - GH_TOKEN=${GH_TOKEN:-}
       - GITLAB_TOKEN=${GITLAB_TOKEN:-}
       - GITLAB_HOST=${GITLAB_HOST:-gitlab.com}
