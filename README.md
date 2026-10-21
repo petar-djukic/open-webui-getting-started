@@ -6,13 +6,17 @@ Run [Open WebUI](https://docs.openwebui.com/) on your laptop with [Open Terminal
 
 You need Docker Desktop. The setup is tested on macOS.
 
-1. Create your settings:
+1. Create `.env` with the folder in your home directory that holds your repositories (`projects` for `~/projects`) and the name and email for the model's commits:
 
    ```bash
-   cp .env.example .env
+   cat > .env <<'EOF'
+   WORKSPACE=projects
+   GIT_USER_NAME="Your Name"
+   GIT_USER_EMAIL=you@example.com
+   EOF
    ```
 
-   In `.env`, set `WORKSPACE` to the folder in your home directory that holds your repositories (`projects` for `~/projects`), and set your git name and email.
+   `terminals.sh` appends the API keys to the end of this file. [`.env.example`](.env.example) lists the optional settings.
 
 2. Start everything:
 
@@ -52,7 +56,7 @@ The new terminal shows up in the chat's terminal picker as `~/projects/my-repo`.
 | Pushes with | `GH_TOKEN`, `GITLAB_TOKEN` | its own token, if you give it one |
 | Cost | one container | one more container (roughly 100–200 MB) each |
 
-Run `./terminals.sh list` to see the repository terminals, and `./terminals.sh remove ~/projects/my-repo` to remove one.
+See [Commands](#commands) for listing and removing them.
 
 ## What terminals.sh does
 
@@ -63,6 +67,15 @@ Open Terminal is one server per container, and Open WebUI needs a connection, wi
 - registers every terminal in Open WebUI through its admin API, named after its folder.
 
 It authenticates to Open WebUI with a short-lived admin token created inside the `open-webui` container, so there is no API key to set up. It only touches the connections it created. `.env`, `terminals.txt` and `terminals.yml` are local and ignored by git.
+
+### Commands
+
+| Command | What it does |
+|---|---|
+| `./terminals.sh sync` | Brings everything in line with your settings. Appends any missing API keys to `.env`, regenerates `terminals.yml`, builds the image and starts or recreates the containers that changed (removing the ones no longer listed), waits for Open WebUI, and registers every terminal. Run it after the first start, after editing `.env`, and after updating. It is safe to run any time. |
+| `./terminals.sh add <folder>` | Adds `<folder>` to `terminals.txt`, then runs `sync`. The folder must be at least two levels under your home directory, such as `~/projects/my-repo`; the first level (`~/projects`) is what the terminal sees read-only. |
+| `./terminals.sh remove <folder>` | Removes the folder from `terminals.txt` and its key from `.env`, then runs `sync`, which stops its container and removes its connection. The terminal's home volume is kept; delete it with `docker volume rm` if you no longer need it. |
+| `./terminals.sh list` | Shows each repository terminal and whether its container is running. |
 
 ## Pushing
 
