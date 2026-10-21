@@ -1,0 +1,31 @@
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:latest
+    container_name: open-webui
+    restart: unless-stopped
+    ports:
+      - "3000:8080"
+    volumes:
+      - open-webui:/app/backend/data
+
+  open-terminal:
+    build: .
+    image: open-terminal-gh
+    container_name: open-terminal
+    restart: unless-stopped
+    volumes:
+      - open-terminal:/home/user
+      - ${HOME}/${WORKSPACE:?set WORKSPACE in .env}:/home/user/${WORKSPACE}
+    environment:
+      - OPEN_TERMINAL_API_KEY=${OPEN_TERMINAL_API_KEY:?set OPEN_TERMINAL_API_KEY in .env}
+      - GIT_USER_NAME=${GIT_USER_NAME:-}
+      - GIT_USER_EMAIL=${GIT_USER_EMAIL:-}
+      - GIT_ALT_REMOTE=${GIT_ALT_REMOTE:-}
+      - GIT_ALT_EMAIL=${GIT_ALT_EMAIL:-}
+      - GH_TOKEN=${GH_TOKEN:-}
+      - GITLAB_TOKEN=${GITLAB_TOKEN:-}
+      - GITLAB_HOST=${GITLAB_HOST:-gitlab.com}
+
+volumes:
+  open-webui:
+  open-terminal:

@@ -1,0 +1,4 @@
+.env
+terminals.txt
+terminals.yml
+*.tmp
